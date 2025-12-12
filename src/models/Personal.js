@@ -13,9 +13,9 @@ const PersonalSchema = new mongoose.Schema({
   puesto: { type: String, required: true, trim: true },
   departamento: { type: String, required: true, trim: true },
   tipoDocumento: {
-    type: String,
+    type: Number,
+    enum: [1, 2, 3, 4], // 1=CC, 2=TI, 3=CE, 4=PA
     required: true,
-    enum: ["Cédula de Ciudadanía", "Tarjeta de Identidad", "Cédula de Extranjería"],
   },
   numeroDocumento: { type: String, required: true, unique: true, trim: true },
   usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Relación con Usuario
@@ -29,5 +29,5 @@ PersonalSchema.pre("save", function (next) {
   next();
 });
 
-const Personal = mongoose.model("Personal", PersonalSchema);
+const Personal = mongoose.model("Personal", PersonalSchema, "personal");
 export default Personal;

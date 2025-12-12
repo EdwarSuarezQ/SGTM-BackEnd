@@ -4,6 +4,8 @@ import Ruta from "../models/Ruta.js";
 import Almacen from "../models/Almacen.js";
 
 // En controllers/embarques.controller.js
+import Personal from "../models/Personal.js";
+
 export const createEmbarque = async (req, res) => {
   try {
     // Verificar permisos (solo admin)
@@ -47,7 +49,24 @@ export const createEmbarque = async (req, res) => {
       }
     }
 
-    const embarque = new Embarque(req.body);
+    // Validate supervisorId (optional)
+    if (req.body.supervisorId) {
+      const supervisor = await Personal.findById(req.body.supervisorId);
+      if (!supervisor) {
+        return res.status(400).json({
+          success: false,
+          message: "El supervisor seleccionado no existe",
+        });
+      }
+    }
+
+    // Asignar el usuario creador
+    const embarqueData = {
+      ...req.body,
+      usuarioId: req.user._id
+    };
+
+    const embarque = new Embarque(embarqueData);
     await embarque.save();
 
     return res.status(201).json({
@@ -93,6 +112,7 @@ export const listEmbarques = async (req, res, next) => {
       estado,
       cliente,
       search,
+      myShipments, // ← Agregar este parámetro
     } = req.query;
 
     const filters = {};
@@ -104,15 +124,34 @@ export const listEmbarques = async (req, res, next) => {
       filters.$or = [
         { numeroGuia: { $regex: search, $options: "i" } },
         { cliente: { $regex: search, $options: "i" } },
-        { origen: { $regex: search, $options: "i" } },
         { destino: { $regex: search, $options: "i" } },
       ];
+    }
+
+    // Filtrar embarques según el rol del usuario
+    // Si myShipments=true, siempre filtrar por usuario actual (para "Mi Espacio")
+    if (myShipments === "true" || (req.user && req.user.rol !== "admin")) {
+      // Buscar el registro de Personal asociado a este usuario
+      const personal = await Personal.findOne({ usuarioId: req.user._id });
+      
+      if (personal) {
+        // Si es personal, solo ver embarques donde es supervisor
+        filters.supervisorId = personal._id;
+      } else {
+        // Si no es personal ni admin (ej. usuario nuevo sin perfil), ver por usuario creador
+        filters.usuarioId = req.user._id;
+      }
     }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const [items, total] = await Promise.all([
-      Embarque.find(filters).sort(sort).skip(skip).limit(parseInt(limit)),
+      Embarque.find(filters)
+        .populate("supervisorId", "nombre") // Populate supervisor info
+        .populate("usuarioId", "nombre email") // Populate creator info
+        .sort(sort)
+        .skip(skip)
+        .limit(parseInt(limit)),
       Embarque.countDocuments(filters),
     ]);
 
@@ -284,7 +323,26 @@ export const deleteEmbarque = async (req, res, next) => {
 // Obtener estadísticas de embarques - VERSIÓN SIMPLIFICADA
 export const getEstadisticas = async (req, res, next) => {
   try {
+    const matchStage = {};
+
+    // Si no es admin, filtrar por embarques supervisados o creados
+    if (req.user.rol !== "admin") {
+      const personal = await Personal.findOne({ usuarioId: req.user._id });
+      
+      if (personal) {
+        // Si es personal (empleado), ver donde es supervisor
+        matchStage.supervisorId = personal._id;
+      } else {
+        // Si es cliente o usuario sin personal, ver donde es el creador/cliente
+        // Nota: Para clientes reales, deberíamos filtrar por el campo 'cliente' (string) o un ID de cliente si existiera.
+        // Por ahora, asumimos que ven lo que crearon o si su nombre coincide con el campo cliente.
+        // Como 'cliente' es un string en el modelo, usamos usuarioId como fallback seguro.
+        matchStage.usuarioId = req.user._id;
+      }
+    }
+
     const stats = await Embarque.aggregate([
+      { $match: matchStage },
       {
         $group: {
           _id: null,

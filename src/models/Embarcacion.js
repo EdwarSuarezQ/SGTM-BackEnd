@@ -24,5 +24,5 @@ EmbarcacionSchema.pre("save", function (next) {
   next();
 });
 
-const Embarcacion = mongoose.model("Embarcacion", EmbarcacionSchema);
+const Embarcacion = mongoose.model("Embarcacion", EmbarcacionSchema, "embarcaciones");
 export default Embarcacion;

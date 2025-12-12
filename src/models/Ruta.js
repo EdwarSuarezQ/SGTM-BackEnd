@@ -31,5 +31,5 @@ RutaSchema.pre("save", function (next) {
   next();
 });
 
-const Ruta = mongoose.model("Ruta", RutaSchema);
+const Ruta = mongoose.model("Ruta", RutaSchema, "rutas");
 export default Ruta;

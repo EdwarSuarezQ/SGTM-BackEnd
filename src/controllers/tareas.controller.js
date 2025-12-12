@@ -62,6 +62,7 @@ export const listTareas = async (req, res, next) => {
       estado,
       prioridad,
       departamento,
+      myTasks, // New parameter for "Mi Espacio"
     } = req.query;
 
     const filter = {};
@@ -79,9 +80,18 @@ export const listTareas = async (req, res, next) => {
     if (departamento) filter.departamento = departamento;
 
     // Filtrar tareas según el rol del usuario
-    if (req.user && req.user.rol === "user") {
-      // Si es usuario normal, solo ver sus tareas asignadas
-      filter.usuarioId = req.user.id;
+    // Si myTasks=true, siempre filtrar por usuario actual (para "Mi Espacio")
+    if (myTasks === "true" || (req.user && req.user.rol !== "admin")) {
+      // Buscar su registro de Personal
+      const personal = await Personal.findOne({ usuarioId: req.user._id });
+      
+      if (personal) {
+        // Solo ver tareas donde es el asignado
+        filter.asignadoId = personal._id;
+      } else {
+        // Si no tiene registro de Personal, no ver ninguna tarea
+        filter.asignadoId = null;
+      }
     }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -151,7 +161,7 @@ export const updateTarea = async (req, res, next) => {
         });
       }
 
-      if (tareaExistente.usuarioId.toString() !== req.user.id) {
+      if (tareaExistente.usuarioId.toString() !== req.user._id.toString()) {
         return res.status(403).json({
           success: false,
           message: "No tienes permisos para editar esta tarea",
@@ -299,7 +309,21 @@ export const deleteTarea = async (req, res, next) => {
 // Estadísticas básicas - OPTIMIZADO CON AGREGACIÓN
 export const tareasStats = async (req, res, next) => {
   try {
+    const matchStage = {};
+
+    // Si no es admin, filtrar por tareas asignadas
+    if (req.user.rol !== "admin") {
+      const personal = await Personal.findOne({ usuarioId: req.user._id });
+      if (personal) {
+        matchStage.asignadoId = personal._id;
+      } else {
+        // Si no tiene personal asociado, no ve nada
+        matchStage.asignadoId = null;
+      }
+    }
+
     const stats = await Tarea.aggregate([
+      { $match: matchStage },
       {
         $group: {
           _id: null,

@@ -27,5 +27,5 @@ TareaSchema.pre("save", function (next) {
   next();
 });
 
-const Tarea = mongoose.model("Tarea", TareaSchema);
+const Tarea = mongoose.model("Tarea", TareaSchema, "tareas");
 export default Tarea;

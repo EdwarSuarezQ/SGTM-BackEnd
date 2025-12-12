@@ -14,6 +14,7 @@ const FacturaSchema = new mongoose.Schema({
     trim: true,
   },
   embarqueId: { type: mongoose.Schema.Types.ObjectId, ref: "Embarque" }, // Relación opcional con Embarque
+  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Usuario que emitió la factura
   fechaEmision: {
     type: Date,
     required: [true, "La fecha de emisión es requerida"],
@@ -45,5 +46,5 @@ FacturaSchema.pre("save", function (next) {
   next();
 });
 
-const Factura = mongoose.model("Factura", FacturaSchema);
+const Factura = mongoose.model("Factura", FacturaSchema, "facturas");
 export default Factura;

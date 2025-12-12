@@ -3,6 +3,12 @@ import User from "../models/User.js";
 import Tarea from "../models/Tarea.js";
 import ErrorResponse from "../utils/errorResponse.js";
 
+// Helper function to convert rol ID to name
+const getRoleName = (rolId) => {
+  const roles = { 1: "admin", 2: "empleado", 3: "cliente" };
+  return roles[rolId] || "empleado";
+};
+
 export const protect = async (req, res, next) => {
   let token;
 
@@ -23,11 +29,17 @@ export const protect = async (req, res, next) => {
 
   try {
     const decoded = await verifyJWT(token);
-    req.user = await User.findById(decoded.id).select("-password");
+    const user = await User.findById(decoded.id).select("-password");
 
-    if (!req.user) {
+    if (!user) {
       return next(new ErrorResponse("Usuario no encontrado", 404));
     }
+
+    // Convert rol to string for backward compatibility
+    req.user = {
+      ...user.toObject(),
+      rol: getRoleName(user.rol),
+    };
 
     next();
   } catch (error) {

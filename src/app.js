@@ -20,7 +20,11 @@ import exportRoutes from "./routes/export.routes.js";
 // Error handling middleware
 import errorHandler from "./middleware/error.js";
 
+import { createRoles, createDocumentTypes } from "./libs/initialSetup.js";
+
 const app = express();
+createRoles();
+createDocumentTypes();
 
 // Middleware
 app.use(

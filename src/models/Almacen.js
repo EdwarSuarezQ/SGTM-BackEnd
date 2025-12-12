@@ -11,6 +11,7 @@ const AlmacenSchema = new mongoose.Schema({
     default: "operativo",
   },
   proximoMantenimiento: { type: Date },
+  encargadoId: { type: mongoose.Schema.Types.ObjectId, ref: "Personal" }, // Jefe de bodega
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -20,5 +21,5 @@ AlmacenSchema.pre("save", function (next) {
   next();
 });
 
-const Almacen = mongoose.model("Almacen", AlmacenSchema);
+const Almacen = mongoose.model("Almacen", AlmacenSchema, "almacenes");
 export default Almacen;

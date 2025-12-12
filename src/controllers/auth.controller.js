@@ -2,6 +2,12 @@ import User from "../models/User.js";
 import { createAccessToken, verifyToken as verifyJWT } from "../libs/jwt.js";
 import ErrorResponse from "../utils/errorResponse.js";
 
+// Helper function to convert rol ID to name
+const getRoleName = (rolId) => {
+  const roles = { 1: "admin", 2: "empleado", 3: "cliente" };
+  return roles[rolId] || "empleado";
+};
+
 export const register = async (req, res, next) => {
   try {
     const { nombre, email, password } = req.body;
@@ -11,7 +17,14 @@ export const register = async (req, res, next) => {
       return next(new ErrorResponse("El correo ya está registrado", 400));
     }
 
-    const user = await User.create({ nombre, email, password });
+    // Rol por defecto es 1 (user)
+    const user = await User.create({
+      nombre,
+      email,
+      password,
+      rol: 2, // Default to empleado
+    });
+
     const token = await createAccessToken({ id: user._id });
 
     res.cookie("token", token, {
@@ -26,7 +39,7 @@ export const register = async (req, res, next) => {
         _id: user._id,
         nombre: user.nombre,
         email: user.email,
-        rol: user.rol,
+        rol: getRoleName(user.rol), // Return string for frontend compatibility
       },
     });
   } catch (err) {
@@ -68,7 +81,7 @@ export const login = async (req, res, next) => {
         _id: user._id,
         nombre: user.nombre,
         email: user.email,
-        rol: user.rol,
+        rol: getRoleName(user.rol), // Convert integer to string
       },
     });
   } catch (err) {
@@ -119,7 +132,7 @@ export const verifyToken = async (req, res) => {
         id: user._id,
         nombre: user.nombre,
         email: user.email,
-        rol: user.rol,
+        rol: getRoleName(user.rol), // Convert integer to string
       },
     });
   } catch (error) {
@@ -135,7 +148,7 @@ export const verifyToken = async (req, res) => {
 export const updateProfile = async (req, res, next) => {
   try {
     const { nombre, email } = req.body;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     // Verificar si el email ya está en uso por otro usuario
     if (email) {
@@ -174,7 +187,7 @@ export const updateProfile = async (req, res, next) => {
 export const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     const user = await User.findById(userId).select("+password");
     if (!user) {

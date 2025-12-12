@@ -26,6 +26,8 @@ const EmbarqueSchema = new mongoose.Schema(
     embarcacionId: { type: mongoose.Schema.Types.ObjectId, ref: "Embarcacion" }, // Relación con Embarcacion
     rutaId: { type: mongoose.Schema.Types.ObjectId, ref: "Ruta" }, // Relación con Ruta
     almacenId: { type: mongoose.Schema.Types.ObjectId, ref: "Almacen" }, // Relación con Almacén
+    supervisorId: { type: mongoose.Schema.Types.ObjectId, ref: "Personal" }, // Empleado responsable
+    usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Usuario que creó el registro
     fechaSalida: {
       type: Date,
       required: [true, "La fecha de salida es obligatoria"],
@@ -88,5 +90,5 @@ EmbarqueSchema.index({ cliente: 1 });
 EmbarqueSchema.index({ estado: 1 });
 EmbarqueSchema.index({ fechaSalida: 1 });
 
-const Embarque = mongoose.model("Embarque", EmbarqueSchema);
+const Embarque = mongoose.model("Embarque", EmbarqueSchema, "embarques");
 export default Embarque;

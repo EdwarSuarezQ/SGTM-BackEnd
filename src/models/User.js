@@ -25,9 +25,9 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
     rol: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      type: Number,
+      enum: [1, 2, 3], // 1 = admin, 2 = empleado, 3 = cliente
+      default: 2, // Default to empleado
     },
   },
   {
@@ -47,5 +47,5 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema, "usuarios");
 export default User;
