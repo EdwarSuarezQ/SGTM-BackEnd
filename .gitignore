@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Environment variables
 .env
@@ -35,11 +34,6 @@ coverage
 # Build outputs
 dist
 build
-
-# Database exports (opcional, si no quieres versionar)
-*.json
-!package.json
-!package-lock.json
 
 # Migration scripts (después de ejecutar)
 migrate_*.js
