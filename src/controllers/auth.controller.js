@@ -30,8 +30,8 @@ export const register = async (req, res, next) => {
     res.cookie("token", token, {
       expires: new Date(Date.now() + 12 * 60 * 60 * 1000), // 12 horas
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     });
     res.status(201).json({
       success: true,
@@ -72,8 +72,8 @@ export const login = async (req, res, next) => {
     res.cookie("token", token, {
       expires: new Date(Date.now() + 12 * 60 * 60 * 1000), // 12 horas
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     });
     res.status(200).json({
       success: true,
@@ -92,6 +92,9 @@ export const login = async (req, res, next) => {
 export const logout = (req, res) => {
   res.cookie("token", "", {
     expires: new Date(0),
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
   });
   return res.sendStatus(200);
 };
