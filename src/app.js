@@ -29,7 +29,14 @@ createDocumentTypes();
 // Middleware
 app.use(
   cors({
-    origin: config.corsOrigin,
+    origin: (origin, callback) => {
+      const allowedOrigins = config.corsOrigin ? config.corsOrigin.split(",") : [];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
