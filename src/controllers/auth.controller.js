@@ -35,11 +35,12 @@ export const register = async (req, res, next) => {
     });
     res.status(201).json({
       success: true,
+      token: token,
       user: {
         _id: user._id,
         nombre: user.nombre,
         email: user.email,
-        rol: getRoleName(user.rol), // Return string for frontend compatibility
+        rol: getRoleName(user.rol),
       },
     });
   } catch (err) {
@@ -77,11 +78,12 @@ export const login = async (req, res, next) => {
     });
     res.status(200).json({
       success: true,
+      token: token,
       user: {
         _id: user._id,
         nombre: user.nombre,
         email: user.email,
-        rol: getRoleName(user.rol), // Convert integer to string
+        rol: getRoleName(user.rol),
       },
     });
   } catch (err) {
