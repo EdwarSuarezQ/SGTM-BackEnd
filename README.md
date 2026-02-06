@@ -148,3 +148,6 @@ backend/
 | "EADDRINUSE" | Cambia el `PORT` en `.env` |
 | "MongooseServerSelectionError" | Verifica que MongoDB esté corriendo |
 | "JWT must be provided" | Verifica `TOKEN_SECRET` y `FRONTEND_URL` en `.env` |
+
+
+[Ver](http://sgtm-front-end.vercel.app/)
