@@ -151,4 +151,4 @@ backend/
 
 --------------------------------
 
-[Ver](http://sgtm-front-end.vercel.app/)
+[Ver](sgtm.vercel.app)
