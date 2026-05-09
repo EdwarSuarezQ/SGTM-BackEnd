@@ -1,9 +1,7 @@
 import { verifyToken as verifyJWT } from "../libs/jwt.js";
 import User from "../models/User.js";
 import Tarea from "../models/Tarea.js";
-import ErrorResponse from "../utils/errorResponse.js";
-
-// Helper function to convert rol ID to name
+import ErrorResponse from "../utils/errorResponse.js";
 const getRoleName = (rolId) => {
   const roles = { 1: "admin", 2: "empleado", 3: "cliente" };
   return roles[rolId] || "empleado";
@@ -33,17 +31,14 @@ export const protect = async (req, res, next) => {
 
     if (!user) {
       return next(new ErrorResponse("Usuario no encontrado", 404));
-    }
-
-    // Convert rol to string for backward compatibility
+    }
     req.user = {
       ...user.toObject(),
       rol: getRoleName(user.rol),
     };
 
     next();
-  } catch (error) {
-    // Manejo específico de errores de JWT
+  } catch (error) {
     if (error.message === "Token expirado") {
       return next(
         new ErrorResponse(
@@ -61,8 +56,7 @@ export const protect = async (req, res, next) => {
 };
 
 export const authorize = (...roles) => {
-  return (req, res, next) => {
-    // Cambiado de req.user.role a req.user.rol para consistencia con el modelo User
+  return (req, res, next) => {
     if (!roles.includes(req.user.rol)) {
       return next(
         new ErrorResponse(
@@ -81,11 +75,7 @@ export const authorizeTarea = async (req, res, next) => {
 
     if (!tarea) {
       return next(new ErrorResponse("Tarea no encontrada", 404));
-    }
-
-    // Si no hay campo usuario en el modelo, permitir a todos los usuarios autenticados
-    // O si existe el campo, verificar que el usuario sea el propietario o admin
-    // Cambiado req.user.role a req.user.rol para consistencia
+    }
     if (
       tarea.usuario &&
       tarea.usuario.toString() !== req.user.id &&

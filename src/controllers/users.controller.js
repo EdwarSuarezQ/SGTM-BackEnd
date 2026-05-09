@@ -1,6 +1,4 @@
-import User from "../models/User.js";
-
-// Crear usuario
+import User from "../models/User.js";
 export const createUser = async (req, res, next) => {
   try {
     const user = new User(req.body);
@@ -28,16 +26,14 @@ export const createUser = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Listar usuarios con paginación y filtros
+};
 export const listUsers = async (req, res, next) => {
   try {
     const {
       page = 1,
       limit = 10,
       rol,
-      q, // búsqueda general
+      q, 
     } = req.query;
 
     const filters = {};
@@ -80,9 +76,7 @@ export const listUsers = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Obtener usuario por ID
+};
 export const getUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
@@ -106,9 +100,7 @@ export const getUser = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Actualizar usuario
+};
 export const updateUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.id, req.body, {
@@ -145,9 +137,7 @@ export const updateUser = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Eliminar usuario
+};
 export const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);

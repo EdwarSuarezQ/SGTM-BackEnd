@@ -26,8 +26,8 @@ const userSchema = new mongoose.Schema(
     },
     rol: {
       type: Number,
-      enum: [1, 2, 3], // 1 = admin, 2 = empleado, 3 = cliente
-      default: 2, // Default to empleado
+      enum: [1, 2, 3], 
+      default: 2, 
     },
   },
   {

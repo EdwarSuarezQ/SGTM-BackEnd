@@ -6,28 +6,24 @@ import {
   updateRuta,
   patchRuta,
   deleteRuta,
-  rutasStats, // AGREGAR ESTA IMPORTACIÓN
+  rutasStats, 
 } from "../controllers/rutas.controller.js";
 import { protect } from "../middleware/auth.js";
 
-const router = express.Router();
-
-// Proteger todas las rutas de rutas
+const router = express.Router();
 router.use(protect);
 
 router
   .route("/")
-  .get(listRutas) // GET /api/rutas
-  .post(createRuta); // POST /api/rutas
-
-// AGREGAR ESTA RUTA DE ESTADÍSTICAS
+  .get(listRutas) 
+  .post(createRuta); 
 router.get("/stats/summary", rutasStats);
 
 router
   .route("/:id")
-  .get(getRuta) // GET /api/rutas/:id
-  .put(updateRuta) // PUT /api/rutas/:id
-  .patch(patchRuta) // PATCH /api/rutas/:id
-  .delete(deleteRuta); // DELETE /api/rutas/:id
+  .get(getRuta) 
+  .put(updateRuta) 
+  .patch(patchRuta) 
+  .delete(deleteRuta); 
 
 export default router;

@@ -11,7 +11,7 @@ const AlmacenSchema = new mongoose.Schema({
     default: "operativo",
   },
   proximoMantenimiento: { type: Date },
-  encargadoId: { type: mongoose.Schema.Types.ObjectId, ref: "Personal" }, // Jefe de bodega
+  encargadoId: { type: mongoose.Schema.Types.ObjectId, ref: "Personal" }, 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

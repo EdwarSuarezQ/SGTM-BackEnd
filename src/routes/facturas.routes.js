@@ -13,26 +13,22 @@ import {
   validateSchema,
   facturaSchema,
   updateFacturaSchema,
-} from "../middleware/validate.js"; // ✅ Importar los esquemas
+} from "../middleware/validate.js"; 
 
-const router = express.Router();
-
-// Proteger todas las rutas de facturas
+const router = express.Router();
 router.use(protect);
 
 router
   .route("/")
-  .get(listFacturas) // GET /api/facturas
-  .post(validateSchema(facturaSchema), createFactura); // ✅ POST con validación
-
-// Nueva ruta para estadísticas
-router.get("/stats/summary", facturasStats); // GET /api/facturas/stats/summary
+  .get(listFacturas) 
+  .post(validateSchema(facturaSchema), createFactura); 
+router.get("/stats/summary", facturasStats); 
 
 router
   .route("/:id")
-  .get(getFactura) // GET /api/facturas/:id
-  .put(validateSchema(facturaSchema), updateFactura) // ✅ PUT con validación
-  .patch(validateSchema(updateFacturaSchema), patchFactura) // ✅ PATCH con validación
-  .delete(deleteFactura); // DELETE /api/facturas/:id
+  .get(getFactura) 
+  .put(validateSchema(facturaSchema), updateFactura) 
+  .patch(validateSchema(updateFacturaSchema), patchFactura) 
+  .delete(deleteFactura); 
 
 export default router;

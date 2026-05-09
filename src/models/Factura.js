@@ -13,8 +13,8 @@ const FacturaSchema = new mongoose.Schema({
     required: [true, "El cliente es requerido"],
     trim: true,
   },
-  embarqueId: { type: mongoose.Schema.Types.ObjectId, ref: "Embarque" }, // Relación opcional con Embarque
-  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Usuario que emitió la factura
+  embarqueId: { type: mongoose.Schema.Types.ObjectId, ref: "Embarque" }, 
+  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 
   fechaEmision: {
     type: Date,
     required: [true, "La fecha de emisión es requerida"],

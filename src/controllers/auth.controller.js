@@ -1,8 +1,6 @@
 import User from "../models/User.js";
 import { createAccessToken, verifyToken as verifyJWT } from "../libs/jwt.js";
-import ErrorResponse from "../utils/errorResponse.js";
-
-// Helper function to convert rol ID to name
+import ErrorResponse from "../utils/errorResponse.js";
 const getRoleName = (rolId) => {
   const roles = { 1: "admin", 2: "empleado", 3: "cliente" };
   return roles[rolId] || "empleado";
@@ -15,20 +13,18 @@ export const register = async (req, res, next) => {
     const userExists = await User.findOne({ email });
     if (userExists) {
       return next(new ErrorResponse("El correo ya está registrado", 400));
-    }
-
-    // Rol por defecto es 1 (user)
+    }
     const user = await User.create({
       nombre,
       email,
       password,
-      rol: 2, // Default to empleado
+      rol: 2, 
     });
 
     const token = await createAccessToken({ id: user._id });
 
     res.cookie("token", token, {
-      expires: new Date(Date.now() + 12 * 60 * 60 * 1000), // 12 horas
+      expires: new Date(Date.now() + 12 * 60 * 60 * 1000), 
       httpOnly: true,
       secure: true,
       sameSite: "none",
@@ -71,7 +67,7 @@ export const login = async (req, res, next) => {
     const token = await createAccessToken({ id: user._id });
 
     res.cookie("token", token, {
-      expires: new Date(Date.now() + 12 * 60 * 60 * 1000), // 12 horas
+      expires: new Date(Date.now() + 12 * 60 * 60 * 1000), 
       httpOnly: true,
       secure: true,
       sameSite: "none",
@@ -99,14 +95,10 @@ export const logout = (req, res) => {
     sameSite: "none",
   });
   return res.sendStatus(200);
-};
-
-// ✅ Función actualizada para verificar token
+};
 export const verifyToken = async (req, res) => {
   try {
-    let { token } = req.cookies;
-
-    // Si no hay token en cookies, buscar en header Authorization
+    let { token } = req.cookies;
     if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
     }
@@ -137,7 +129,7 @@ export const verifyToken = async (req, res) => {
         id: user._id,
         nombre: user.nombre,
         email: user.email,
-        rol: getRoleName(user.rol), // Convert integer to string
+        rol: getRoleName(user.rol), 
       },
     });
   } catch (error) {
@@ -147,15 +139,11 @@ export const verifyToken = async (req, res) => {
       message: error.message || "Token inválido",
     });
   }
-};
-
-// Actualizar perfil de usuario
+};
 export const updateProfile = async (req, res, next) => {
   try {
     const { nombre, email } = req.body;
-    const userId = req.user._id;
-
-    // Verificar si el email ya está en uso por otro usuario
+    const userId = req.user._id;
     if (email) {
       const emailExists = await User.findOne({ email, _id: { $ne: userId } });
       if (emailExists) {
@@ -186,9 +174,7 @@ export const updateProfile = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Cambiar contraseña
+};
 export const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -197,15 +183,11 @@ export const changePassword = async (req, res, next) => {
     const user = await User.findById(userId).select("+password");
     if (!user) {
       return next(new ErrorResponse("Usuario no encontrado", 404));
-    }
-
-    // Verificar contraseña actual
+    }
     const isMatch = await user.matchPassword(currentPassword);
     if (!isMatch) {
       return next(new ErrorResponse("La contraseña actual es incorrecta", 401));
-    }
-
-    // Actualizar contraseña
+    }
     user.password = newPassword;
     await user.save();
 

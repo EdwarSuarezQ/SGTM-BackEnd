@@ -1,10 +1,6 @@
-import Factura from "../models/Factura.js";
-
-// Crear factura
-// En facturas.controller.js - función createFactura
+import Factura from "../models/Factura.js";
 export const createFactura = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -23,18 +19,14 @@ export const createFactura = async (req, res, next) => {
   } catch (err) {
     console.error("❌ Error al crear factura:", err);
     console.error("🔍 Detalles del error:", err.message);
-    console.error("📝 Stack:", err.stack);
-
-    // Manejar error de duplicado
+    console.error("📝 Stack:", err.stack);
     if (err.code === 11000) {
       return res.status(400).json({
         success: false,
         message: "El ID de factura ya existe",
         error: "DUPLICATE_ID",
       });
-    }
-
-    // Manejar errores de validación
+    }
     if (err.name === "ValidationError") {
       const errors = Object.values(err.errors).map((e) => e.message);
       return res.status(400).json({
@@ -50,38 +42,30 @@ export const createFactura = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-
-// Listar facturas con paginación y filtros mejorados
+};
 export const listFacturas = async (req, res, next) => {
   try {
     const {
       page = 1,
       limit = 10,
       sort = "-createdAt",
-      q, // búsqueda general
+      q, 
       estado,
       cliente,
       fechaDesde,
       fechaHasta,
     } = req.query;
 
-    const filters = {};
-
-    // Búsqueda general
+    const filters = {};
     if (q) {
       filters.$or = [
         { idFactura: new RegExp(q, "i") },
         { cliente: new RegExp(q, "i") },
         { concepto: new RegExp(q, "i") },
       ];
-    }
-
-    // Filtros específicos
+    }
     if (estado) filters.estado = estado;
-    if (cliente) filters.cliente = new RegExp(cliente, "i");
-
-    // Filtros por fecha
+    if (cliente) filters.cliente = new RegExp(cliente, "i");
     if (fechaDesde || fechaHasta) {
       filters.fechaEmision = {};
       if (fechaDesde) filters.fechaEmision.$gte = fechaDesde;
@@ -113,9 +97,7 @@ export const listFacturas = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-
-// Obtener factura por ID
+};
 export const getFactura = async (req, res, next) => {
   try {
     const factura = await Factura.findById(req.params.id);
@@ -138,12 +120,9 @@ export const getFactura = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-
-// Actualizar factura completa (PUT)
+};
 export const updateFactura = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -185,12 +164,9 @@ export const updateFactura = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-
-// Actualizar factura parcialmente (PATCH)
+};
 export const patchFactura = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -231,12 +207,9 @@ export const patchFactura = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-
-// Eliminar factura
+};
 export const deleteFactura = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -265,9 +238,7 @@ export const deleteFactura = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-
-// Estadísticas de facturas (NUEVO) - OPTIMIZADO CON AGREGACIÓN
+};
 export const facturasStats = async (req, res, next) => {
   try {
     const stats = await Factura.aggregate([
@@ -286,20 +257,17 @@ export const facturasStats = async (req, res, next) => {
           },
           canceladas: {
             $sum: { $cond: [{ $eq: ["$estado", "cancelada"] }, 1, 0] },
-          },
-          // Total facturado (excluyendo canceladas)
+          },
           totalFacturado: {
             $sum: {
               $cond: [{ $ne: ["$estado", "cancelada"] }, "$monto", 0],
             },
-          },
-          // Total pagado
+          },
           totalPagado: {
             $sum: {
               $cond: [{ $eq: ["$estado", "pagada"] }, "$monto", 0],
             },
-          },
-          // Total pendiente
+          },
           totalPendiente: {
             $sum: {
               $cond: [{ $eq: ["$estado", "pendiente"] }, "$monto", 0],

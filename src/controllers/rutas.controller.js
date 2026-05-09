@@ -1,9 +1,6 @@
-import Ruta from "../models/Ruta.js";
-
-// Crear ruta
+import Ruta from "../models/Ruta.js";
 export const createRuta = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -22,18 +19,14 @@ export const createRuta = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Listar rutas con paginación simple y filtro por estado o tipo - AGREGAR BÚSQUEDA
+};
 export const listRutas = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, estado, tipo, q, sort = "-createdAt" } = req.query; // AGREGAR 'q' para búsqueda
+    const { page = 1, limit = 10, estado, tipo, q, sort = "-createdAt" } = req.query; 
 
     const filters = {};
     if (estado) filters.estado = estado;
-    if (tipo) filters.tipo = tipo;
-
-    // AGREGAR BÚSQUEDA COMO EN TAREAS
+    if (tipo) filters.tipo = tipo;
     if (q) {
       filters.$or = [
         { idRuta: new RegExp(q, "i") },
@@ -62,9 +55,7 @@ export const listRutas = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Obtener ruta por ID
+};
 export const getRuta = async (req, res, next) => {
   try {
     const ruta = await Ruta.findById(req.params.id);
@@ -82,12 +73,9 @@ export const getRuta = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Actualizar ruta completa
+};
 export const updateRuta = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -115,12 +103,9 @@ export const updateRuta = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Actualizar ruta parcialmente
+};
 export const patchRuta = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -147,20 +132,15 @@ export const patchRuta = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Eliminar ruta
+};
 export const deleteRuta = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
         message: "No tienes permisos para eliminar rutas",
       });
-    }
-
-    // Check if ruta has active embarques
+    }
     const Embarque = (await import("../models/Embarque.js")).default;
     const embarquesActivos = await Embarque.countDocuments({ 
       rutaId: req.params.id,
@@ -190,10 +170,7 @@ export const deleteRuta = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// AGREGAR ESTADÍSTICAS COMO EN TAREAS
-// AGREGAR ESTA FUNCIÓN AL FINAL DEL CONTROLADOR
+};
 export const rutasStats = async (req, res, next) => {
   try {
     const stats = await Ruta.aggregate([

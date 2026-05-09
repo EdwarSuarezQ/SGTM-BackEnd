@@ -16,7 +16,7 @@ const documentTypeSchema = new mongoose.Schema(
     code: {
       type: String,
       trim: true,
-      uppercase: true, // 'CC', 'TI', 'CE'
+      uppercase: true, 
     },
   },
   {

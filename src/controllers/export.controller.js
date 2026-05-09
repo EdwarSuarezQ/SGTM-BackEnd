@@ -18,7 +18,7 @@ const collectionsMap = {
 
 export const exportCollection = async (req, res, next) => {
   try {
-    const { recurso } = req.params; // ej: 'tareas', 'embarques', etc.
+    const { recurso } = req.params; 
     const Model = collectionsMap[recurso];
 
     if (!Model) {
@@ -26,9 +26,7 @@ export const exportCollection = async (req, res, next) => {
         success: false,
         message: "Recurso de exportación no válido",
       });
-    }
-
-    // En el futuro aquí se pueden aplicar filtros (estado, fechas, etc.)
+    }
     const items = await Model.find({}).lean();
 
     return res.status(200).json({

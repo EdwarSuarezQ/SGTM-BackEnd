@@ -19,24 +19,15 @@ export const getResumenEstadisticas = async (req, res, next) => {
       facturasPaid,
       facturasPending,
       facturasOverdue,
-    ] = await Promise.all([
-      // Tareas
+    ] = await Promise.all([
       Tarea.countDocuments(),
       Tarea.countDocuments({ estado: "pendiente" }),
-      Tarea.countDocuments({ estado: "completada" }),
-
-      // Embarques
+      Tarea.countDocuments({ estado: "completada" }),
       Embarque.countDocuments(),
-      Embarque.countDocuments({ estado: "en-transito" }),
-
-      // Embarcaciones
+      Embarque.countDocuments({ estado: "en-transito" }),
       Embarcacion.countDocuments(),
-      Embarcacion.countDocuments({ estado: "en-puerto" }),
-
-      // Almacenes
-      Almacen.countDocuments(),
-
-      // Facturas
+      Embarcacion.countDocuments({ estado: "en-puerto" }),
+      Almacen.countDocuments(),
       Factura.countDocuments(),
       Factura.countDocuments({ estado: "pagada" }),
       Factura.countDocuments({ estado: "pendiente" }),

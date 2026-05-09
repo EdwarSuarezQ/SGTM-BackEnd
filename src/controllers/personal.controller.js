@@ -1,33 +1,23 @@
 import Personal from "../models/Personal.js";
-import User from "../models/User.js";
-
-// Crear registro de personal - VERSIÓN MEJORADA
+import User from "../models/User.js";
 export const createPersonal = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
         message: "No tienes permisos para crear personal",
       });
-    }
-
-    // 1. Verificar si ya existe un usuario con ese email
+    }
     const existingUser = await User.findOne({ email: req.body.email });
     if (existingUser) {
       return res.status(400).json({
         success: false,
         message: "El email ya está registrado como usuario del sistema",
       });
-    }
-
-    // 2. Crear el personal
+    }
     const persona = new Personal(req.body);
-    await persona.save();
-
-    // 3. Crear el usuario asociado automáticamente
-    try {
-      // Ensure password has at least 6 characters (User model requirement)
+    await persona.save();
+    try {
       const password = persona.numeroDocumento.trim();
       const finalPassword = password.length >= 6 ? password : password.padEnd(6, '0');
       
@@ -35,17 +25,12 @@ export const createPersonal = async (req, res, next) => {
         nombre: persona.nombre,
         email: persona.email,
         password: finalPassword,
-        rol: req.body.rol || "user",
-      });
-
-      // Actualizar el personal con el ID del usuario creado
+        rol: req.body.rol || 2, 
+      });
       persona.usuarioId = newUser._id;
       await persona.save();
-    } catch (userError) {
-      // Si falla la creación del usuario, eliminamos el personal creado (rollback manual)
-      await Personal.findByIdAndDelete(persona._id);
-      
-      // Si es error de validación (ej. contraseña corta), devolver 400
+    } catch (userError) {
+      await Personal.findByIdAndDelete(persona._id);
       if (userError.name === "ValidationError") {
         return res.status(400).json({
           success: false,
@@ -65,9 +50,7 @@ export const createPersonal = async (req, res, next) => {
       data: persona,
     });
   } catch (error) {
-    console.error("Error al crear personal:", error);
-
-    // Manejar errores de duplicado (email o documento único)
+    console.error("Error al crear personal:", error);
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(400).json({
@@ -83,9 +66,7 @@ export const createPersonal = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Listar personal con paginación y filtros - VERSIÓN MEJORADA
+};
 export const listPersonal = async (req, res, next) => {
   try {
     const {
@@ -94,15 +75,13 @@ export const listPersonal = async (req, res, next) => {
       sort = "-createdAt",
       estado,
       departamento,
-      q, // Búsqueda general
+      q, 
     } = req.query;
 
     const filters = {};
 
     if (estado) filters.estado = estado;
-    if (departamento) filters.departamento = departamento;
-
-    // Búsqueda general por nombre, email o puesto
+    if (departamento) filters.departamento = departamento;
     if (q) {
       filters.$or = [
         { nombre: { $regex: q, $options: "i" } },
@@ -137,9 +116,7 @@ export const listPersonal = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Obtener personal por ID - VERSIÓN MEJORADA
+};
 export const getPersonal = async (req, res, next) => {
   try {
     const persona = await Personal.findById(req.params.id).populate("usuarioId", "rol email");
@@ -163,12 +140,9 @@ export const getPersonal = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Actualizar personal completo - VERSIÓN MEJORADA
+};
 export const updatePersonal = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -186,9 +160,7 @@ export const updatePersonal = async (req, res, next) => {
         success: false,
         message: "Personal no encontrado",
       });
-    }
-
-    // Si se envía el rol, actualizar también el usuario asociado
+    }
     if (req.body.rol && persona.usuarioId) {
       await User.findByIdAndUpdate(persona.usuarioId, { rol: req.body.rol });
     }
@@ -199,9 +171,7 @@ export const updatePersonal = async (req, res, next) => {
       data: persona,
     });
   } catch (error) {
-    console.error("Error al actualizar personal:", error);
-
-    // Manejar errores de duplicado
+    console.error("Error al actualizar personal:", error);
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -216,12 +186,9 @@ export const updatePersonal = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Actualizar personal parcialmente - VERSIÓN MEJORADA
+};
 export const patchPersonal = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -247,9 +214,7 @@ export const patchPersonal = async (req, res, next) => {
       data: persona,
     });
   } catch (error) {
-    console.error("Error al actualizar personal:", error);
-
-    // Manejar errores de duplicado
+    console.error("Error al actualizar personal:", error);
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -264,20 +229,15 @@ export const patchPersonal = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Eliminar personal - VERSIÓN MEJORADA
+};
 export const deletePersonal = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
         message: "No tienes permisos para eliminar personal",
       });
-    }
-
-    // Check if personal has assigned tareas
+    }
     const Tarea = (await import("../models/Tarea.js")).default;
     const tareasAsignadas = await Tarea.countDocuments({ asignadoId: req.params.id });
     
@@ -310,10 +270,7 @@ export const deletePersonal = async (req, res, next) => {
       error: error.message,
     });
   }
-};
-
-// Estadísticas de personal - NUEVO (como tareasStats)
-// Estadísticas de personal - OPTIMIZADO CON AGREGACIÓN
+};
 export const personalStats = async (req, res, next) => {
   try {
     const stats = await Personal.aggregate([

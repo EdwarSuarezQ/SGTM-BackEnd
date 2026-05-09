@@ -1,27 +1,19 @@
-// src/middleware/validate.js
-import { z } from "zod";
 
-// Esquemas existentes que ya tienes...
+import { z } from "zod";
 const userBaseSchema = {
   email: z.string().email("Email inválido").min(1, "El email es requerido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-};
-
-// Esquema para registro
+};
 export const registerSchema = z.object({
   name: z
     .string()
     .min(3, "El nombre debe tener al menos 3 caracteres")
     .max(50, "El nombre no puede tener más de 50 caracteres"),
   ...userBaseSchema,
-});
-
-// Esquema para login
+});
 export const loginSchema = z.object({
   ...userBaseSchema,
-});
-
-// Esquema para actualizar perfil
+});
 export const updateProfileSchema = z.object({
   nombre: z
     .string()
@@ -29,15 +21,11 @@ export const updateProfileSchema = z.object({
     .max(50, "El nombre no puede tener más de 50 caracteres")
     .optional(),
   email: z.string().email("Email inválido").optional(),
-});
-
-// Esquema para cambiar contraseña
+});
 export const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, "La contraseña actual es requerida"),
   newPassword: z.string().min(6, "La nueva contraseña debe tener al menos 6 caracteres"),
-});
-
-// Esquema para tareas
+});
 export const tareaSchema = z.object({
   titulo: z
     .string()
@@ -59,7 +47,7 @@ export const tareaSchema = z.object({
   fecha: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)), "Fecha inválida")
-    .optional(), // Allow optional if needed, or keep required but flexible
+    .optional(), 
   prioridad: z.enum(["alta", "media", "baja"]).default("media"),
   estado: z.enum(["pendiente", "en-progreso", "completada"]).default("pendiente"),
   departamento: z
@@ -68,12 +56,8 @@ export const tareaSchema = z.object({
     .trim()
     .optional()
     .default(""),
-});
-
-// Esquema para actualización parcial de tareas
-export const updateTareaSchema = tareaSchema.partial();
-
-// ✅ ESQUEMAS PARA FACTURAS - AGREGAR ESTOS
+});
+export const updateTareaSchema = tareaSchema.partial();
 export const facturaSchema = z.object({
   idFactura: z
     .string()
@@ -113,12 +97,8 @@ export const facturaSchema = z.object({
     .trim()
     .optional()
     .default(""),
-});
-
-// Esquema para actualización parcial de facturas
-export const updateFacturaSchema = facturaSchema.partial();
-
-// Middleware de validación
+});
+export const updateFacturaSchema = facturaSchema.partial();
 export const validateSchema = (schema) => (req, res, next) => {
   try {
     schema.parse(req.body);

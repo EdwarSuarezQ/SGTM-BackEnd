@@ -14,11 +14,11 @@ const PersonalSchema = new mongoose.Schema({
   departamento: { type: String, required: true, trim: true },
   tipoDocumento: {
     type: Number,
-    enum: [1, 2, 3, 4], // 1=CC, 2=TI, 3=CE, 4=PA
+    enum: [1, 2, 3, 4], 
     required: true,
   },
   numeroDocumento: { type: String, required: true, unique: true, trim: true },
-  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Relación con Usuario
+  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 
   estado: { type: String, enum: ["activo", "inactivo"], default: "activo" },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

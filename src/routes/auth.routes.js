@@ -16,15 +16,10 @@ import {
   changePasswordSchema,
 } from "../middleware/validate.js";
 
-const router = express.Router();
-
-// Rutas de autenticación
-// router.post("/register", validateSchema(registerSchema), register); // Registro público deshabilitado
+const router = express.Router();
 router.post("/login", validateSchema(loginSchema), login);
 router.post("/logout", logout);
-router.get("/verify-token", verifyToken);
-
-// Rutas de perfil (protegidas)
+router.get("/verify-token", verifyToken);
 router.put("/profile", protect, validateSchema(updateProfileSchema), updateProfile);
 router.put("/change-password", protect, validateSchema(changePasswordSchema), changePassword);
 

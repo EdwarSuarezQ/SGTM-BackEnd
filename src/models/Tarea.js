@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 const TareaSchema = new mongoose.Schema({
   titulo: { type: String, required: true, trim: true },
   descripcion: { type: String, required: true, trim: true },
-  asignado: { type: String, trim: true }, // Deprecated: use asignadoId instead
-  asignadoId: { type: mongoose.Schema.Types.ObjectId, ref: "Personal" }, // Reference to Personal
-  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Relación con Usuario
+  asignado: { type: String, trim: true }, 
+  asignadoId: { type: mongoose.Schema.Types.ObjectId, ref: "Personal" }, 
+  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 
   fecha: { type: Date, required: true },
   prioridad: {
     type: String,

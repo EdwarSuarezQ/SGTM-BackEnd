@@ -23,11 +23,11 @@ const EmbarqueSchema = new mongoose.Schema(
       required: [true, "El destino es obligatorio"],
       trim: true,
     },
-    embarcacionId: { type: mongoose.Schema.Types.ObjectId, ref: "Embarcacion" }, // Relación con Embarcacion
-    rutaId: { type: mongoose.Schema.Types.ObjectId, ref: "Ruta" }, // Relación con Ruta
-    almacenId: { type: mongoose.Schema.Types.ObjectId, ref: "Almacen" }, // Relación con Almacén
-    supervisorId: { type: mongoose.Schema.Types.ObjectId, ref: "Personal" }, // Empleado responsable
-    usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Usuario que creó el registro
+    embarcacionId: { type: mongoose.Schema.Types.ObjectId, ref: "Embarcacion" }, 
+    rutaId: { type: mongoose.Schema.Types.ObjectId, ref: "Ruta" }, 
+    almacenId: { type: mongoose.Schema.Types.ObjectId, ref: "Almacen" }, 
+    supervisorId: { type: mongoose.Schema.Types.ObjectId, ref: "Personal" }, 
+    usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 
     fechaSalida: {
       type: Date,
       required: [true, "La fecha de salida es obligatoria"],
@@ -83,9 +83,7 @@ const EmbarqueSchema = new mongoose.Schema(
   {
     timestamps: true,
   }
-);
-
-// SOLO estos índices
+);
 EmbarqueSchema.index({ cliente: 1 });
 EmbarqueSchema.index({ estado: 1 });
 EmbarqueSchema.index({ fechaSalida: 1 });

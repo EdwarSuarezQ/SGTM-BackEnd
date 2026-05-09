@@ -1,4 +1,4 @@
-// src/routes/embarques.routes.js
+
 import express from "express";
 import {
   createEmbarque,
@@ -9,11 +9,11 @@ import {
   deleteEmbarque,
   getEstadisticas,
 } from "../controllers/embarques.controller.js";
-import { protect } from "../middleware/auth.js"; // ✅ REACTIVAR
+import { protect } from "../middleware/auth.js"; 
 
 const router = express.Router();
 
-router.use(protect); // ✅ REACTIVAR
+router.use(protect); 
 
 router.route("/").get(listEmbarques).post(createEmbarque);
 

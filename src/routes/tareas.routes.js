@@ -15,23 +15,21 @@ import {
   updateTareaSchema,
 } from "../middleware/validate.js";
 
-const router = express.Router();
-
-// Todas las rutas de tareas estarán protegidas
+const router = express.Router();
 router.use(protect);
 
 router
   .route("/")
-  .get(listTareas) // GET /api/tareas
-  .post(validateSchema(tareaSchema), createTarea); // POST /api/tareas con validación
+  .get(listTareas) 
+  .post(validateSchema(tareaSchema), createTarea); 
 
-router.get("/stats/summary", tareasStats); // GET /api/tareas/stats/summary
+router.get("/stats/summary", tareasStats); 
 
 router
   .route("/:id")
   .get(getTarea)
-  .put(validateSchema(tareaSchema), updateTarea) // ✅ Quitamos authorizeTarea temporalmente
-  .patch(validateSchema(updateTareaSchema), patchTarea) // ✅ Quitamos authorizeTarea temporalmente
-  .delete(deleteTarea); // ✅ Quitamos authorizeTarea temporalmente
+  .put(validateSchema(tareaSchema), updateTarea) 
+  .patch(validateSchema(updateTareaSchema), patchTarea) 
+  .delete(deleteTarea); 
 
 export default router;

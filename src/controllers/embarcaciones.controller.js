@@ -1,9 +1,6 @@
-import Embarcacion from "../models/Embarcacion.js";
-
-// Crear embarcación
+import Embarcacion from "../models/Embarcacion.js";
 export const createEmbarcacion = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -27,18 +24,14 @@ export const createEmbarcacion = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Listar embarcaciones con paginación y filtros básicos
+};
 export const listEmbarcaciones = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, estado, tipo, q, sort = "-createdAt" } = req.query;
 
     const filters = {};
     if (estado) filters.estado = estado;
-    if (tipo) filters.tipo = tipo;
-
-    // Búsqueda general
+    if (tipo) filters.tipo = tipo;
     if (q) {
       filters.$or = [
         { nombre: { $regex: q, $options: "i" } },
@@ -70,9 +63,7 @@ export const listEmbarcaciones = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Obtener embarcación por ID
+};
 export const getEmbarcacion = async (req, res, next) => {
   try {
     const embarcacion = await Embarcacion.findById(req.params.id);
@@ -90,12 +81,9 @@ export const getEmbarcacion = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Actualizar embarcación completa
+};
 export const updateEmbarcacion = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -133,12 +121,9 @@ export const updateEmbarcacion = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Actualizar embarcación parcialmente
+};
 export const patchEmbarcacion = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -171,20 +156,15 @@ export const patchEmbarcacion = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Eliminar embarcación
+};
 export const deleteEmbarcacion = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
         message: "No tienes permisos para eliminar embarcaciones",
       });
-    }
-
-    // Check if embarcacion has active embarques
+    }
     const Embarque = (await import("../models/Embarque.js")).default;
     const embarquesActivos = await Embarque.countDocuments({ 
       embarcacionId: req.params.id,
@@ -214,9 +194,7 @@ export const deleteEmbarcacion = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Obtener estadísticas de embarcaciones
+};
 export const getEmbarcacionesStats = async (req, res, next) => {
   try {
     const stats = await Embarcacion.aggregate([

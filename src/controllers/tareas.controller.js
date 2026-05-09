@@ -1,12 +1,9 @@
 import { validationResult } from "express-validator";
 import Tarea from "../models/Tarea.js";
 import User from "../models/User.js";
-import Personal from "../models/Personal.js";
-
-// Crear tarea - VERSIÓN CORREGIDA
+import Personal from "../models/Personal.js";
 export const createTarea = async (req, res, next) => {
-  try {
-    // Verificar rol de administrador
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -14,9 +11,7 @@ export const createTarea = async (req, res, next) => {
       });
     }
 
-    const tareaData = { ...req.body };
-
-    // Validate asignadoId if provided
+    const tareaData = { ...req.body };
     if (tareaData.asignadoId) {
       const personal = await Personal.findById(tareaData.asignadoId);
       if (!personal) {
@@ -24,10 +19,8 @@ export const createTarea = async (req, res, next) => {
           success: false,
           message: "El personal asignado no existe",
         });
-      }
-      // Set asignado field for backward compatibility
-      tareaData.asignado = personal.nombre;
-      // Link to user if personal has usuarioId
+      }
+      tareaData.asignado = personal.nombre;
       if (personal.usuarioId) {
         tareaData.usuarioId = personal.usuarioId;
       }
@@ -49,9 +42,7 @@ export const createTarea = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-
-// Listar tareas - VERSIÓN CORREGIDA
+};
 export const listTareas = async (req, res, next) => {
   try {
     const {
@@ -62,7 +53,7 @@ export const listTareas = async (req, res, next) => {
       estado,
       prioridad,
       departamento,
-      myTasks, // New parameter for "Mi Espacio"
+      myTasks, 
     } = req.query;
 
     const filter = {};
@@ -77,19 +68,13 @@ export const listTareas = async (req, res, next) => {
 
     if (estado) filter.estado = estado;
     if (prioridad) filter.prioridad = prioridad;
-    if (departamento) filter.departamento = departamento;
-
-    // Filtrar tareas según el rol del usuario
-    // Si myTasks=true, siempre filtrar por usuario actual (para "Mi Espacio")
-    if (myTasks === "true" || (req.user && req.user.rol !== "admin")) {
-      // Buscar su registro de Personal
+    if (departamento) filter.departamento = departamento;
+    if (myTasks === "true" || (req.user && req.user.rol !== "admin")) {
       const personal = await Personal.findOne({ usuarioId: req.user._id });
       
-      if (personal) {
-        // Solo ver tareas donde es el asignado
+      if (personal) {
         filter.asignadoId = personal._id;
-      } else {
-        // Si no tiene registro de Personal, no ver ninguna tarea
+      } else {
         filter.asignadoId = null;
       }
     }
@@ -122,9 +107,7 @@ export const listTareas = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-
-// Obtener tarea por ID
+};
 export const getTarea = async (req, res, next) => {
   try {
     const tarea = await Tarea.findById(req.params.id);
@@ -142,17 +125,12 @@ export const getTarea = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Actualizar tarea completa (PUT)
+};
 export const updateTarea = async (req, res, next) => {
   try {
     const tareaData = { ...req.body };
-    const { id } = req.params;
-
-    // Verificar permisos
-    if (req.user.rol !== "admin") {
-      // Si es usuario, verificar que la tarea sea suya
+    const { id } = req.params;
+    if (req.user.rol !== "admin") {
       const tareaExistente = await Tarea.findById(id);
       if (!tareaExistente) {
         return res.status(404).json({
@@ -166,25 +144,15 @@ export const updateTarea = async (req, res, next) => {
           success: false,
           message: "No tienes permisos para editar esta tarea",
         });
-      }
-
-      // Usuarios solo pueden cambiar el estado
-      // Eliminamos cualquier otro campo del body para evitar modificaciones no autorizadas
+      }
       const allowedUpdates = ["estado"];
       const updates = Object.keys(req.body);
       const isValidOperation = updates.every((update) =>
         allowedUpdates.includes(update)
       );
 
-      if (!isValidOperation) {
-        // Si intenta cambiar algo más, lo ignoramos o lanzamos error. 
-        // Para ser amigables, filtramos solo lo permitido.
-        // Pero aquí vamos a ser estrictos para evitar confusiones.
-        // O mejor, simplemente forzamos que tareaData solo tenga 'estado'
-        
-        // Reconstruimos tareaData solo con estado
-        if (req.body.estado) {
-             // Limpiamos tareaData y solo dejamos estado
+      if (!isValidOperation) {
+        if (req.body.estado) {
              for (const key in tareaData) delete tareaData[key];
              tareaData.estado = req.body.estado;
         } else {
@@ -194,9 +162,7 @@ export const updateTarea = async (req, res, next) => {
              });
         }
       }
-    }
-
-    // Validate asignadoId if provided
+    }
     if (tareaData.asignadoId) {
       const personal = await Personal.findById(tareaData.asignadoId);
       if (!personal) {
@@ -204,10 +170,8 @@ export const updateTarea = async (req, res, next) => {
           success: false,
           message: "El personal asignado no existe",
         });
-      }
-      // Set asignado field for backward compatibility
-      tareaData.asignado = personal.nombre;
-      // Link to user if personal has usuarioId
+      }
+      tareaData.asignado = personal.nombre;
       if (personal.usuarioId) {
         tareaData.usuarioId = personal.usuarioId;
       }
@@ -231,9 +195,7 @@ export const updateTarea = async (req, res, next) => {
       data: tarea,
     });
   } catch (err) {
-    console.error("Error al actualizar tarea:", err);
-    
-    // Manejar errores de validación de Mongoose
+    console.error("Error al actualizar tarea:", err);
     if (err.name === "ValidationError" && err.errors) {
       return res.status(400).json({
         success: false,
@@ -251,9 +213,7 @@ export const updateTarea = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-
-// Actualizar tarea parcialmente (PATCH)
+};
 export const patchTarea = async (req, res, next) => {
   try {
     const tarea = await Tarea.findById(req.params.id);
@@ -275,12 +235,9 @@ export const patchTarea = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Eliminar tarea
+};
 export const deleteTarea = async (req, res, next) => {
-  try {
-    // Verificar rol de administrador
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -304,20 +261,15 @@ export const deleteTarea = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Estadísticas básicas - OPTIMIZADO CON AGREGACIÓN
+};
 export const tareasStats = async (req, res, next) => {
   try {
-    const matchStage = {};
-
-    // Si no es admin, filtrar por tareas asignadas
+    const matchStage = {};
     if (req.user.rol !== "admin") {
       const personal = await Personal.findOne({ usuarioId: req.user._id });
       if (personal) {
         matchStage.asignadoId = personal._id;
-      } else {
-        // Si no tiene personal asociado, no ve nada
+      } else {
         matchStage.asignadoId = null;
       }
     }

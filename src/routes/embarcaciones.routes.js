@@ -10,23 +10,21 @@ import {
 } from "../controllers/embarcaciones.controller.js";
 import { protect } from "../middleware/auth.js";
 
-const router = express.Router();
-
-// Proteger todas las rutas de embarcaciones
+const router = express.Router();
 router.use(protect);
 
 router
   .route("/")
-  .get(listEmbarcaciones) // GET /api/embarcaciones
-  .post(createEmbarcacion); // POST /api/embarcaciones
+  .get(listEmbarcaciones) 
+  .post(createEmbarcacion); 
 
 router.get("/stats/general", getEmbarcacionesStats);
 
 router
   .route("/:id")
-  .get(getEmbarcacion) // GET /api/embarcaciones/:id
-  .put(updateEmbarcacion) // PUT /api/embarcaciones/:id
-  .patch(patchEmbarcacion) // PATCH /api/embarcaciones/:id
-  .delete(deleteEmbarcacion); // DELETE /api/embarcaciones/:id
+  .get(getEmbarcacion) 
+  .put(updateEmbarcacion) 
+  .patch(patchEmbarcacion) 
+  .delete(deleteEmbarcacion); 
 
 export default router;

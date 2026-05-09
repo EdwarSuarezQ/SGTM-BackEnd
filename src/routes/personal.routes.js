@@ -16,17 +16,15 @@ router.use(protect);
 
 router
   .route("/")
-  .get(listPersonal) // GET /api/personal
-  .post(createPersonal); // POST /api/personal
-
-// Agregar ruta de estadísticas (como tareas)
-router.get("/stats/summary", personalStats); // GET /api/personal/stats/summary
+  .get(listPersonal) 
+  .post(createPersonal); 
+router.get("/stats/summary", personalStats); 
 
 router
   .route("/:id")
-  .get(getPersonal) // GET /api/personal/:id
-  .put(updatePersonal) // PUT /api/personal/:id
-  .patch(patchPersonal) // PATCH /api/personal/:id
-  .delete(deletePersonal); // DELETE /api/personal/:id
+  .get(getPersonal) 
+  .put(updatePersonal) 
+  .patch(patchPersonal) 
+  .delete(deletePersonal); 
 
 export default router;

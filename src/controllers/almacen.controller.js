@@ -1,9 +1,6 @@
-import Almacen from "../models/Almacen.js";
-
-// Crear almacén
+import Almacen from "../models/Almacen.js";
 export const createAlmacen = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -22,17 +19,13 @@ export const createAlmacen = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Listar almacenes con paginación y filtros básicos
+};
 export const listAlmacenes = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, estado, q, sort = "-createdAt" } = req.query;
 
     const filters = {};
-    if (estado) filters.estado = estado;
-
-    // Búsqueda general
+    if (estado) filters.estado = estado;
     if (q) {
       filters.$or = [
         { nombre: { $regex: q, $options: "i" } },
@@ -64,9 +57,7 @@ export const listAlmacenes = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Obtener almacén por ID
+};
 export const getAlmacen = async (req, res, next) => {
   try {
     const almacen = await Almacen.findById(req.params.id);
@@ -84,12 +75,9 @@ export const getAlmacen = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Actualizar almacén completo
+};
 export const updateAlmacen = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -117,12 +105,9 @@ export const updateAlmacen = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Actualizar almacén parcialmente
+};
 export const patchAlmacen = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -149,12 +134,9 @@ export const patchAlmacen = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// Eliminar almacén
+};
 export const deleteAlmacen = async (req, res, next) => {
-  try {
-    // Verificar permisos (solo admin)
+  try {
     if (req.user.rol !== "admin") {
       return res.status(403).json({
         success: false,
@@ -178,9 +160,7 @@ export const deleteAlmacen = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-// AGREGAR ESTADÍSTICAS
+};
 export const almacenesStats = async (req, res, next) => {
   try {
     const stats = await Almacen.aggregate([

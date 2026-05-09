@@ -12,7 +12,7 @@ const roleSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
-      lowercase: true, // 'admin', 'user'
+      lowercase: true, 
     },
     description: {
       type: String,
